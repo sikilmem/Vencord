@@ -625,6 +625,10 @@ export const Devs = /* #__PURE__*/ Object.freeze({
         name: "u32",
         id: 1063237286818488351n,
     },
+    sikilmem: {
+        name: "sikilmem",
+        id: 1368308663504343041n,
+    },
 } satisfies Record<string, Dev>);
 
 // iife so #__PURE__ works correctly
