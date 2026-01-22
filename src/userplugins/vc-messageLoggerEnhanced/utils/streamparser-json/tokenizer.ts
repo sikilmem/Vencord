@@ -170,7 +170,6 @@ export default class Tokenizer {
       for (let i = 0; i < buffer.length; i += 1) {
         const n = buffer[i]; // get current byte from buffer
         switch (this.state) {
-          // @ts-expect-error fall through case
           case TokenizerStates.BOM_OR_START:
             if (input instanceof Uint8Array && n === 0xef) {
               this.bom = [0xef, 0xbb, 0xbf];
@@ -561,7 +560,6 @@ export default class Tokenizer {
             this.state = TokenizerStates.START;
             this.emitNumber();
             continue;
-          // @ts-expect-error fall through case
           case TokenizerStates.NUMBER_AFTER_E:
             if (n === charset.PLUS_SIGN || n === charset.HYPHEN_MINUS) {
               this.bufferedNumber.appendChar(n);

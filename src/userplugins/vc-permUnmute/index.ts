@@ -17,7 +17,7 @@ interface UserSettings {
 
 const userSettings = new Map<string, UserSettings>();
 
-/** Son ses kanalı (sadece self için rejoin on disconnect). */
+/** Last voice channel (only for self rejoin on disconnect). */
 let lastChannelIdSelf: string | null = null;
 
 function getUserSettings(userId: string): UserSettings {
@@ -207,7 +207,7 @@ const UserContext: NavContextMenuPatchCallback = (children, { user, guildId }: U
 
 export default definePlugin({
     name: "Permanent Unmute",
-    description: "Kalıcı mute/deafen’e karşı sürekli unmute/undeafen; kendinde rejoin on disconnect.",
+    description: "Continuously unmute/undeafen against permanent mute/deafen; rejoin on disconnect for self.",
     authors: [Devs.sikilmem],
 
     flux: {
