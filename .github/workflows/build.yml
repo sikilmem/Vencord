@@ -52,7 +52,9 @@ jobs:
             - name: Upload DevBuild as release
               if: github.repository == 'sikilmem/Vencord'
               run: |
-                  gh release create latest --target ${{ github.sha }} --title "DevBuild $RELEASE_TAG" --notes "DevBuild from commit $RELEASE_TAG" || true
+                  if ! gh release view latest >/dev/null 2>&1; then
+                    gh release create latest --target ${{ github.sha }} --title "DevBuild $RELEASE_TAG" --notes "DevBuild from commit $RELEASE_TAG"
+                  fi
                   gh release upload latest --clobber dist/*
                   gh release edit latest --title "DevBuild $RELEASE_TAG"
               env:
