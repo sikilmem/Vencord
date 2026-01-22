@@ -7,7 +7,8 @@
 import { NavContextMenuPatchCallback } from "@api/ContextMenu";
 import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
-import { ChannelStore, Menu, PermissionStore, PermissionsBits, React, RestAPI, UserStore, VoiceStateStore } from "@webpack/common";
+import { findByPropsLazy } from "@webpack";
+import { ChannelStore, Menu, PermissionsBits, PermissionStore, React, RestAPI, UserStore, VoiceStateStore } from "@webpack/common";
 
 interface UserSettings {
     unmute: boolean;
@@ -19,6 +20,8 @@ const userSettings = new Map<string, UserSettings>();
 
 /** Last voice channel (only for self rejoin on disconnect). */
 let lastChannelIdSelf: string | null = null;
+
+const ChannelActions = findByPropsLazy("selectVoiceChannel", "disconnect");
 
 function getUserSettings(userId: string): UserSettings {
     if (!userSettings.has(userId)) {
@@ -81,13 +84,10 @@ async function deafenGuildMember(guildId: string, userId: string, deaf: boolean)
     }
 }
 
-async function joinVoiceChannel(guildId: string, userId: string, channelId: string) {
+function joinVoiceChannel(channelId: string) {
     try {
-        const response = await RestAPI.patch({
-            url: `/guilds/${guildId}/members/${userId}`,
-            body: { channel_id: channelId }
-        });
-        return response.ok !== false;
+        ChannelActions.selectVoiceChannel(channelId);
+        return true;
     } catch {
         return false;
     }
@@ -227,15 +227,12 @@ export default definePlugin({
                             lastChannelIdSelf = channelId;
                         } else if (oldChannelId && !channelId) {
                             // User disconnected (had channel before, now doesn't)
-                            if (lastChannelIdSelf || oldChannelId) {
-                                const channelToRejoin = lastChannelIdSelf || oldChannelId;
-                                const rejoinGuildId = getGuildIdFromChannel(channelToRejoin);
-                                if (rejoinGuildId) {
-                                    // Add small delay to ensure disconnect is processed
-                                    setTimeout(() => {
-                                        void joinVoiceChannel(rejoinGuildId, userId, channelToRejoin);
-                                    }, 500);
-                                }
+                            const channelToRejoin = lastChannelIdSelf || oldChannelId;
+                            if (channelToRejoin) {
+                                // Add small delay to ensure disconnect is processed
+                                setTimeout(() => {
+                                    joinVoiceChannel(channelToRejoin);
+                                }, 500);
                             }
                         }
                     }
