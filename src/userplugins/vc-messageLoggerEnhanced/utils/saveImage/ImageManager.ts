@@ -24,10 +24,10 @@ import {
     set,
 } from "@api/DataStore";
 import { sleep } from "@utils/misc";
-import { LoggedAttachment } from "../../types";
 
 import { Flogger, Native } from "../..";
 import { DEFAULT_IMAGE_CACHE_DIR } from "../constants";
+import { LoggedAttachment } from "../../types";
 
 const ImageStore = createStore("MessageLoggerImageData", "MessageLoggerImageStore");
 

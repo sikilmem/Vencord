@@ -5,7 +5,7 @@
  */
 
 import { NavContextMenuPatchCallback } from "@api/ContextMenu";
-import { definePluginSettings, Settings } from "@api/Settings";
+import { definePluginSettings } from "@api/Settings";
 import { Devs } from "@utils/constants";
 import { Logger } from "@utils/Logger";
 import definePlugin, { OptionType } from "@utils/types";
@@ -352,14 +352,14 @@ function showCustomNotification(options: CustomNotificationOptions) {
 
     const closeBtn = notification.querySelector(".vc-notify-user-changes-notification-close");
     if (closeBtn) {
-        closeBtn.addEventListener("click", (e) => {
+        closeBtn.addEventListener("click", e => {
             e.stopPropagation();
             closeNotification();
         });
     }
 
     if (options.onClick) {
-        notification.addEventListener("click", (e) => {
+        notification.addEventListener("click", e => {
             if (e.target !== closeBtn && !closeBtn?.contains(e.target as Node)) {
                 options.onClick!();
                 closeNotification();

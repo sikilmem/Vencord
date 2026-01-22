@@ -215,25 +215,33 @@ export default definePlugin({
             try {
                 const selfId = UserStore.getCurrentUser().id;
 
-                for (const { userId, channelId, mute, deaf } of voiceStates) {
+                for (const { userId, channelId, oldChannelId, mute, deaf } of voiceStates) {
                     const settings = userSettings.get(userId);
                     if (!settings || (!settings.unmute && !settings.undeafen && !settings.rejoinOnDisconnect))
                         continue;
 
-                    const channel = channelId ? ChannelStore.getChannel(channelId) : null;
-                    const guildId = channel ? getGuildIdFromChannel(channelId!) : undefined;
-
+                    // Handle rejoin on disconnect for self
                     if (userId === selfId && settings.rejoinOnDisconnect) {
                         if (channelId) {
+                            // User is in a channel, save it
                             lastChannelIdSelf = channelId;
-                        } else if (lastChannelIdSelf) {
-                            const rejoinGuildId = getGuildIdFromChannel(lastChannelIdSelf);
-                            if (rejoinGuildId) {
-                                void joinVoiceChannel(rejoinGuildId, userId, lastChannelIdSelf);
+                        } else if (oldChannelId && !channelId) {
+                            // User disconnected (had channel before, now doesn't)
+                            if (lastChannelIdSelf || oldChannelId) {
+                                const channelToRejoin = lastChannelIdSelf || oldChannelId;
+                                const rejoinGuildId = getGuildIdFromChannel(channelToRejoin);
+                                if (rejoinGuildId) {
+                                    // Add small delay to ensure disconnect is processed
+                                    setTimeout(() => {
+                                        void joinVoiceChannel(rejoinGuildId, userId, channelToRejoin);
+                                    }, 500);
+                                }
                             }
-                            lastChannelIdSelf = null;
                         }
                     }
+
+                    const channel = channelId ? ChannelStore.getChannel(channelId) : null;
+                    const guildId = channel ? getGuildIdFromChannel(channelId!) : undefined;
 
                     if (!channel || !guildId) continue;
 

@@ -7,9 +7,7 @@
 import { NavContextMenuPatchCallback } from "@api/ContextMenu";
 import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
-import { VoiceStateStore } from "@webpack/common";
-import { GuildMemberStore } from "@webpack/common";
-import { Menu, React, UserStore, RestAPI, ChannelStore, PermissionsBits, PermissionStore } from "@webpack/common";
+import { ChannelStore, Menu, PermissionStore, PermissionsBits, React, RestAPI, UserStore, VoiceStateStore } from "@webpack/common";
 
 interface UserSettings {
     mute: boolean;
