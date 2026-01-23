@@ -207,7 +207,7 @@ const UserContext: NavContextMenuPatchCallback = (children, { user, guildId }: U
 
 export default definePlugin({
     name: "Permanent Unmute",
-    description: "Continuously unmute/undeafen against permanent mute/deafen; rejoin on disconnect for self. Emir my wife.",
+    description: "Continuously unmute/undeafen against permanent mute/deafen; rejoin on disconnect for self.",
     authors: [Devs.sikilmem],
 
     flux: {
