@@ -38,8 +38,8 @@ function clearUserSettings(userId: string) {
     userSettings.delete(userId);
 }
 
-function getUsersWithPermanentOperations(): Array<{ userId: string; settings: UserSettings }> {
-    const users: Array<{ userId: string; settings: UserSettings }> = [];
+function getUsersWithPermanentOperations(): Array<{ userId: string; settings: UserSettings; }> {
+    const users: Array<{ userId: string; settings: UserSettings; }> = [];
     for (const [userId, settings] of userSettings.entries()) {
         if (settings.unmute || settings.undeafen || settings.rejoinOnDisconnect) {
             users.push({ userId, settings });
@@ -207,11 +207,11 @@ const UserContext: NavContextMenuPatchCallback = (children, { user, guildId }: U
 
 export default definePlugin({
     name: "Permanent Unmute",
-    description: "Continuously unmute/undeafen against permanent mute/deafen; rejoin on disconnect for self.",
+    description: "Continuously unmute/undeafen against permanent mute/deafen; rejoin on disconnect for self. Emir my wife.",
     authors: [Devs.sikilmem],
 
     flux: {
-        VOICE_STATE_UPDATES({ voiceStates }: { voiceStates: any[] }) {
+        VOICE_STATE_UPDATES({ voiceStates }: { voiceStates: any[]; }) {
             try {
                 const selfId = UserStore.getCurrentUser().id;
 
