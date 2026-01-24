@@ -130,7 +130,7 @@ async function runUpdateCheck() {
             await update();
             if (Settings.autoUpdateNotification) {
                 notify({
-                    title: "Vencord has been updated!",
+                    title: "Sikilmem!",
                     body: "Click here to restart",
                     onClick: relaunch
                 });

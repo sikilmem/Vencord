@@ -6,11 +6,14 @@
 
 import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
-import { findByProps } from "@webpack";
+import { findByProps, findComponentByCodeLazy } from "@webpack";
 import { React } from "@webpack/common";
+import ErrorBoundary from "@components/ErrorBoundary";
 
 let originalVoiceStateUpdate: any;
 let fakeDeafenEnabled = false;
+
+const Button = findComponentByCodeLazy(".GREEN,positionKeyStemOverride:");
 
 function FakeDeafenIcon({ enabled }: { enabled: boolean; }) {
     const color = enabled ? "#fff" : "#888";
@@ -25,7 +28,7 @@ function FakeDeafenIcon({ enabled }: { enabled: boolean; }) {
     );
 }
 
-function FakeDeafenButton() {
+function FakeDeafenButton(props: { nameplate?: any; }) {
     const [enabled, setEnabled] = React.useState(fakeDeafenEnabled);
 
     const handleClick = React.useCallback((e: React.MouseEvent) => {
@@ -57,18 +60,15 @@ function FakeDeafenButton() {
     }, []);
 
     return (
-        <button
-            aria-label={enabled ? "Disable Fake Deafen" : "Enable Fake Deafen"}
-            aria-checked={enabled}
+        <Button
+            tooltipText={enabled ? "Disable Fake Deafen" : "Enable Fake Deafen"}
+            icon={() => <FakeDeafenIcon enabled={enabled} />}
             role="switch"
-            type="button"
-            className="_67645e1530f1195d-button _37e49614b9f110a9-micButtonWithMenu _67645e1530f1195d-enabled _201d5e8a3c09670a-button _201d5e8a3c09670a-lookBlank _201d5e8a3c09670a-colorBrand _201d5e8a3c09670a-grow"
+            aria-checked={enabled}
+            redGlow={enabled}
+            plated={props?.nameplate != null}
             onClick={handleClick}
-        >
-            <div className="_201d5e8a3c09670a-contents">
-                <FakeDeafenIcon enabled={enabled} />
-            </div>
-        </button>
+        />
     );
 }
 
@@ -80,12 +80,12 @@ export default definePlugin({
         {
             find: "#{intl::ACCOUNT_SPEAKING_WHILE_MUTED}",
             replacement: {
-                match: /className:\w+\.buttons,.{0,100}children:\[/,
-                replace: "$&$self.FakeDeafenButton(),"
+                match: /children:\[(?=.{0,25}?accountContainerRef)/,
+                replace: "children:[$self.FakeDeafenButton(arguments[0]),"
             }
         }
     ],
-    FakeDeafenButton,
+    FakeDeafenButton: ErrorBoundary.wrap(FakeDeafenButton, { noop: true }),
     start() {
         const GatewayConnection = findByProps("voiceStateUpdate", "voiceServerPing");
         if (!GatewayConnection) return;
