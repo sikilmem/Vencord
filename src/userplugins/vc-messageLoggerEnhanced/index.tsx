@@ -273,18 +273,14 @@ export default definePlugin({
             }
         },
 
-        // https://regex101.com/r/JD9Qav/1
-        // This patch is outdated and causing regex match errors
-        // TODO: Update this patch for current Discord structure
-        /*
+        // Patch to ensure childrenAccessories is available for deleted messages
         {
-            find: "=!0,disableInteraction:",
+            find: "REMOVE_ATTACHMENT_BODY",
             replacement: {
-                match: /(cozyMessage.{1,50},)childrenHeader:/,
-                replace: "$1childrenAccessories:arguments[0].childrenAccessories || null,childrenHeader:"
+                match: /children:(\[[^\]]{0,100}?this.renderSuppressConfirmModal[^\]]{0,100}?\])/,
+                replace: "children:arguments[0].message?.deleted ? [arguments[0].childrenAccessories] : $1"
             }
         },
-        */
 
         // https://regex101.com/r/S3IVGm/1
         // fix vidoes failing because there are no thumbnails
