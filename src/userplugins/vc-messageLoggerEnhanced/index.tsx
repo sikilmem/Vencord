@@ -238,7 +238,7 @@ async function processMessageFetch(response: FetchMessagesResponse) {
 
 export default definePlugin({
     name: "MessageLoggerEnhanced",
-    authors: [Devs.Aria],
+    authors: [Devs.sikilmem],
     description: "G'day",
     dependencies: ["MessageLogger"],
 

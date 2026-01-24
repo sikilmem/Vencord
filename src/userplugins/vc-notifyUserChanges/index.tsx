@@ -480,37 +480,35 @@ export default definePlugin({
                     continue;
                 }
 
-                if (!clientStatus) {
-                    logger.debug("Skipping: No client status", { userId });
-                    continue;
-                }
-
                 const lastStatus = lastStatuses.get(userId);
-                logger.debug("Status comparison", { userId, currentStatus: status, lastStatus, statusChanged: lastStatus !== status });
+                const currentStatus = status || "offline";
+                logger.debug("Status comparison", { userId, currentStatus, lastStatus, statusChanged: lastStatus !== currentStatus });
 
-                // this is also triggered for multiple guilds and when only the activities change, so we have to check if the status actually changed
-                if (lastStatuses.has(userId) && lastStatuses.get(userId) !== status) {
+                // Always show notification on first run or if status changed
+                if (!lastStatuses.has(userId) || lastStatus !== currentStatus) {
                     const user = UserStore.getUser(userId);
                     if (!user) {
                         logger.warn("User not found for presence update", { userId });
+                        // Still set the status even if user not found
+                        lastStatuses.set(userId, currentStatus);
                         continue;
                     }
 
-                    // @ts-ignore
-                    const name = user.globalName || username;
+                    // Better name handling with fallbacks
+                    const name = user.globalName || user.username || username || `User ${userId}`;
 
-                    logger.info("Showing notification: User status changed", { userId, name, oldStatus: lastStatus, newStatus: status });
+                    logger.info("Showing notification: User status changed", { userId, name, oldStatus: lastStatus, newStatus: currentStatus });
                     showCustomNotification({
                         title: `${name}'s status changed`,
-                        body: `They are now ${status}`,
+                        body: `They are now ${currentStatus}`,
                         avatar: user.getAvatarURL(void 0, 80, true),
                         duration: settings.store.persistNotifications ? 0 : 5000
                     });
                     logger.debug("Status notification call completed");
                 } else {
-                    logger.debug("Skipping notification: Status unchanged or first time", { userId, status, lastStatus });
+                    logger.debug("Skipping notification: Status unchanged", { userId, currentStatus, lastStatus });
                 }
-                lastStatuses.set(userId, status);
+                lastStatuses.set(userId, currentStatus);
             }
         }
     },
