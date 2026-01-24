@@ -19,9 +19,9 @@ The cutest Discord client mod
 -   Maintained very actively, broken plugins are usually fixed within 12 hours
 -   Settings sync: Keep your plugins and their settings synchronised between devices / apps (optional)
 
-## To-Do
+## TODO
 
-Write bitrate plugin.
+Write bitrate plugin.<br>
 Write DM clear plugin.
 
 ## Installing / Uninstalling

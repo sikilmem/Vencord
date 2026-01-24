@@ -238,7 +238,7 @@ async function processMessageFetch(response: FetchMessagesResponse) {
 
 export default definePlugin({
     name: "MessageLoggerEnhanced",
-    authors: [Devs.sikilmem],
+    authors: [Devs.Aria],
     description: "G'day",
     dependencies: ["MessageLogger"],
 
@@ -274,6 +274,9 @@ export default definePlugin({
         },
 
         // https://regex101.com/r/JD9Qav/1
+        // This patch is outdated and causing regex match errors
+        // TODO: Update this patch for current Discord structure
+        /*
         {
             find: "=!0,disableInteraction:",
             replacement: {
@@ -281,6 +284,7 @@ export default definePlugin({
                 replace: "$1childrenAccessories:arguments[0].childrenAccessories || null,childrenHeader:"
             }
         },
+        */
 
         // https://regex101.com/r/S3IVGm/1
         // fix vidoes failing because there are no thumbnails

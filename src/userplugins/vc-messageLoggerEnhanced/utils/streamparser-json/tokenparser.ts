@@ -143,6 +143,7 @@ export default class TokenParser {
       this.value &&
       this.stack.every((item) => !item.emit)
     ) {
+       
       delete (this.value as JsonStruct as any)[this.key as string | number];
     }
 
@@ -381,6 +382,7 @@ export default class TokenParser {
     }
   }
 
+   
   public onValue(parsedElementInfo: ParsedElementInfo): void {
     // Override me
     throw new TokenParserError(

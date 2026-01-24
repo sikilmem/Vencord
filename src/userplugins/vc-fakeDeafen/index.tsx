@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
 import definePlugin from "@utils/types";
 import { findByProps, findComponentByCodeLazy } from "@webpack";
 import { React } from "@webpack/common";
-import ErrorBoundary from "@components/ErrorBoundary";
 
 let originalVoiceStateUpdate: any;
 let fakeDeafenEnabled = false;
