@@ -20,17 +20,19 @@ import { classNameFactory } from "@api/Styles";
 import { Button } from "@components/Button";
 import { Heading } from "@components/Heading";
 import { copyWithToast } from "@utils/discord";
+import { classes } from "@utils/misc";
+import { findCssClassesLazy } from "@webpack";
 import { Toasts } from "@webpack/common";
 
 import { Native, settings } from "../..";
 import { DEFAULT_IMAGE_CACHE_DIR } from "../../utils/constants";
 
 const cl = classNameFactory("folder-upload");
+const inputClasses = findCssClassesLazy("input", "inputWrapper", "editable") as Record<string, string>;
 
 function createDirSelector(settingKey: "logsDir" | "imageCacheDir", successMessage: string) {
     return function DirSelector({ option }) {
-        // Check if we're in web environment
-        if (typeof window !== "undefined" && window.location.protocol === "https:") return null;
+        if (IS_WEB) return null;
 
         return (
             <section>
@@ -81,30 +83,12 @@ export function SelectFolderInput({ settingsKey, successMessage }: Props) {
     }
 
     return (
-        <div style={{
-            display: "flex",
-            gap: "8px",
-            alignItems: "center",
-            padding: "8px",
-            border: "1px solid var(--background-modifier-accent)",
-            borderRadius: "4px",
-            backgroundColor: "var(--background-secondary)"
-        }}>
-            <div
-                onClick={() => copyWithToast(path)}
-                style={{
-                    flex: 1,
-                    padding: "8px 12px",
-                    backgroundColor: "var(--background-primary)",
-                    border: "1px solid var(--background-modifier-accent)",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "14px"
-                }}
-            >
+        <div className={classes(cl("-container"), inputClasses.input)}>
+            <div onClick={() => copyWithToast(path)} className={cl("-input")}>
                 {path == null || path === DEFAULT_IMAGE_CACHE_DIR ? "Choose Folder" : getDirName(path)}
             </div>
             <Button
+                className={cl("-button")}
                 size="small"
                 onClick={onFolderSelect}
             >

@@ -265,7 +265,7 @@ export default definePlugin({
             }
         },
         {
-            find: ".controlButtonWrapper,",
+            find: /toolbar:\i,mobileToolbar:\i/,
             predicate: () => settings.store.ShowLogsButton,
             replacement: {
                 match: /(function \i\(\i\){)(.{1,200}toolbar.{1,100}mobileToolbar)/,
@@ -273,12 +273,13 @@ export default definePlugin({
             }
         },
 
-        // Patch to ensure childrenAccessories is available for deleted messages
+        // https://regex101.com/r/JD9Qav/1
+        // MessagePreview component in LogsModal
         {
-            find: "REMOVE_ATTACHMENT_BODY",
+            find: "=!0,disableInteraction:",
             replacement: {
-                match: /children:(\[[^\]]{0,100}?this.renderSuppressConfirmModal[^\]]{0,100}?\])/,
-                replace: "children:arguments[0].message?.deleted ? [arguments[0].childrenAccessories] : $1"
+                match: /childrenHeader:.{0,100}childrenMessageContent/,
+                replace: "childrenAccessories:arguments[0].childrenAccessories || null,$&"
             }
         },
 
