@@ -6,7 +6,7 @@
 
 import { addContextMenuPatch, removeContextMenuPatch } from "@api/ContextMenu";
 import { Devs } from "@utils/constants";
-import { Modals,openModal } from "@utils/modal";
+import { Modals, openModal } from "@utils/modal";
 import definePlugin from "@utils/types";
 import { findByPropsLazy } from "@webpack";
 import {
@@ -16,7 +16,8 @@ import {
     MessageStore,
     React,
     TextInput,
-    UserStore } from "@webpack/common";
+    UserStore
+} from "@webpack/common";
 
 // Discord internal actions (signatures can vary)
 const MessageActions = findByPropsLazy("deleteMessage", "fetchMessages");
@@ -393,8 +394,6 @@ export default definePlugin({
     name: "DmClear",
     description: "Discord bulk message deleter.",
     authors: [Devs.sikilmem],
-
-    dependencies: ["MenuItemDeobfuscatorAPI"],
 
     start() {
         for (const id of MENU_IDS) addContextMenuPatch(id, contextMenuPatch);
