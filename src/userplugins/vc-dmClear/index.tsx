@@ -11,7 +11,6 @@ import {
     Forms,
     Button,
     TextInput,
-    TextArea,
     UserStore,
     MessageStore
 } from "@webpack/common";
@@ -176,9 +175,18 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
     const [logs, setLogs] = React.useState<string[]>([]);
     const [running, setRunning] = React.useState(false);
 
+    const logsRef = React.useRef<HTMLTextAreaElement | null>(null);
+
     const pushLog = React.useCallback((line: string) => {
         setLogs(prev => [...prev, `[${fmt(new Date())}] ${line}`]);
     }, []);
+
+    // Auto-scroll to bottom on new logs
+    React.useEffect(() => {
+        const el = logsRef.current;
+        if (!el) return;
+        el.scrollTop = el.scrollHeight;
+    }, [logs]);
 
     const doDelete = React.useCallback(async () => {
         const requested = Number.parseInt(countStr, 10);
@@ -263,7 +271,6 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
         }
     }, [countStr, pushLog, channel.id, channel.name, me?.id, me?.username]);
 
-    // IMPORTANT: stopPropagation only (NO preventDefault) so text selection works.
     const stopBubble = (e: any) => {
         try { e?.stopPropagation?.(); } catch { }
     };
@@ -276,7 +283,6 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
                 <Forms.FormTitle tag="h2">DmClear</Forms.FormTitle>
             </ModalHeader>
 
-            {/* Shield only inside content so outside-click close still works, but inner UI is usable */}
             <ModalContent>
                 <div onMouseDown={stopBubble} onClick={stopBubble} onPointerDown={stopBubble}>
                     <Forms.FormSection>
@@ -291,16 +297,36 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
 
                     <Forms.FormSection style={{ marginTop: 12 }}>
                         <Forms.FormTitle tag="h3">Logs</Forms.FormTitle>
-                        <TextArea
+
+                        {/* Plain textarea to avoid Discord "input" styling */}
+                        <textarea
+                            ref={logsRef}
                             value={logs.join("\n")}
                             readOnly
+                            spellCheck={false}
                             style={{
-                                minHeight: 240,
-                                fontFamily: "monospace",
-                                fontSize: 12,
-                                lineHeight: "16px",
-                                padding: 10,
-                                whiteSpace: "pre-wrap"
+                                width: "100%",
+                                height: 320,
+                                resize: "vertical",
+                                boxSizing: "border-box",
+                                padding: "12px",
+                                borderRadius: "8px",
+                                border: "1px solid rgba(255,255,255,0.14)",
+                                background: "rgba(0,0,0,0.55)",
+
+                                // ✅ readability fix
+                                color: "rgba(255,255,255,0.92)",
+                                caretColor: "rgba(255,255,255,0.92)",
+
+                                fontFamily:
+                                    "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace",
+                                fontSize: "12px",
+                                lineHeight: "18px",
+                                whiteSpace: "pre",
+                                overflow: "auto",
+
+                                // Optional: makes selection more visible on dark bg
+                                outline: "none"
                             }}
                         />
                     </Forms.FormSection>
@@ -338,7 +364,6 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
 }
 
 function openDmClearModal(channel: TargetChannel) {
-    // Defer so the context menu close can't interfere
     setTimeout(() => {
         requestAnimationFrame(() => {
             openModal((props: any) => <DmClearModal {...props} channel={channel} />, undefined);
