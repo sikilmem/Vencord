@@ -93,7 +93,7 @@ export const settings = definePluginSettings({
     },
 
     autoCheckForUpdates: {
-        default: true,
+        default: false,
         type: OptionType.BOOLEAN,
         description: "Automatically check for updates on startup.",
     },
