@@ -48,22 +48,6 @@ export default definePlugin({
     name: "PlatformSpoofer",
     description: "Spoof what platform or device you're on",
     authors: [Devs.sikilmem],
-    settingsAboutComponent: () => (
-        <div
-            style={{
-                padding: 12,
-                borderRadius: 8,
-                border: "1px solid var(--status-danger)",
-                background: "color-mix(in oklab, var(--status-danger) 15%, transparent)",
-                color: "#fff",
-                fontSize: 14,
-                lineHeight: 1.4,
-                fontWeight: 500
-            }}
-        >
-            We can't guarantee this plugin won't get you warned or banned.
-        </div>
-    ),
     settings: settings,
     patches: [
         {
