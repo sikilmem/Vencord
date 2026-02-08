@@ -7,7 +7,7 @@ Commit: ef490c7
 ### MessageLoggerEnhanced
 Commit: 8bb3880, Semi-Custom
 ### NotifyUserChanges
-Commit: Custom
+Commit: 3bcba8c Semi-Custom
 ### Permanent Voice Controls
 Commit: Custom
 ### Permanent Unmute
