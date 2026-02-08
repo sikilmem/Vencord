@@ -23,23 +23,15 @@ const MessageActions = findByPropsLazy("deleteMessage", "fetchMessages");
 const ChannelStore = findByPropsLazy("getChannel");
 const SelectedChannelStore = findByPropsLazy("getChannelId");
 
-// Patch MANY possible menu IDs (DM menus vary a lot between builds)
 const MENU_IDS = [
-    // Guild channels
     "channel-context",
     "thread-context",
-
-    // Classic DM ids
     "dm-context",
     "gdm-context",
-
-    // Private channel variants (common)
     "private-channel-context",
     "private-channel-user-context",
     "private-channel-recipient-context",
     "private-channel-list-context",
-
-    // Sometimes DM entries are treated like user rows
     "user-context",
     "friends-user-context",
     "friend-row-context"
@@ -157,11 +149,6 @@ function getChannelFromContextMenuArgs(args: any[]): TargetChannel | null {
     return null;
 }
 
-/**
- * IMPORTANT:
- * We MUST wrap content with Modals.ModalRoot, otherwise Discord treats clicks as "outside" and closes the modal.
- * Additionally we add a "click shield" to stop propagation of mouse events inside the modal.
- */
 function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
     const { channel } = modalProps;
     const me = UserStore.getCurrentUser();
@@ -171,7 +158,6 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
     const ModalContent = (Modals as any)?.ModalContent;
     const ModalFooter = (Modals as any)?.ModalFooter;
 
-    // Safety: if a build lacks these, fail loudly instead of creating a "fake modal"
     if (!ModalRoot || !ModalHeader || !ModalContent || !ModalFooter) {
         return (
             <div style={{ padding: 16 }}>
@@ -277,8 +263,8 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
         }
     }, [countStr, pushLog, channel.id, channel.name, me?.id, me?.username]);
 
-    const stop = (e: any) => {
-        try { e?.preventDefault?.(); } catch { }
+    // IMPORTANT: stopPropagation only (NO preventDefault) so text selection works.
+    const stopBubble = (e: any) => {
         try { e?.stopPropagation?.(); } catch { }
     };
 
@@ -286,13 +272,13 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
 
     return (
         <ModalRoot {...modalProps} size={size}>
-            {/* Click shield: prevents "outside click" closing when interacting with inputs/buttons */}
-            <div onMouseDown={stop} onClick={stop}>
-                <ModalHeader>
-                    <Forms.FormTitle tag="h2">DmClear</Forms.FormTitle>
-                </ModalHeader>
+            <ModalHeader>
+                <Forms.FormTitle tag="h2">DmClear</Forms.FormTitle>
+            </ModalHeader>
 
-                <ModalContent>
+            {/* Shield only inside content so outside-click close still works, but inner UI is usable */}
+            <ModalContent>
+                <div onMouseDown={stopBubble} onClick={stopBubble} onPointerDown={stopBubble}>
                     <Forms.FormSection>
                         <Forms.FormTitle tag="h3">How many messages will be deleted?</Forms.FormTitle>
                         <TextInput
@@ -300,25 +286,39 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
                             onChange={(v: string) => setCountStr(v)}
                             placeholder="e.g. 50"
                             disabled={running}
-                            autoFocus
                         />
                     </Forms.FormSection>
 
-                    <Forms.FormSection>
+                    <Forms.FormSection style={{ marginTop: 12 }}>
                         <Forms.FormTitle tag="h3">Logs</Forms.FormTitle>
                         <TextArea
                             value={logs.join("\n")}
                             readOnly
-                            style={{ minHeight: 240 }}
+                            style={{
+                                minHeight: 240,
+                                fontFamily: "monospace",
+                                fontSize: 12,
+                                lineHeight: "16px",
+                                padding: 10,
+                                whiteSpace: "pre-wrap"
+                            }}
                         />
                     </Forms.FormSection>
-                </ModalContent>
+                </div>
+            </ModalContent>
 
-                <ModalFooter>
-                    <Button onClick={doDelete} disabled={running}>
-                        Delete
-                    </Button>
-
+            <ModalFooter>
+                <div
+                    onMouseDown={stopBubble}
+                    onClick={stopBubble}
+                    onPointerDown={stopBubble}
+                    style={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: 8,
+                        width: "100%"
+                    }}
+                >
                     <Button
                         look={Button.Looks.LINK}
                         color={Button.Colors.PRIMARY}
@@ -327,8 +327,12 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
                     >
                         Close
                     </Button>
-                </ModalFooter>
-            </div>
+
+                    <Button onClick={doDelete} disabled={running}>
+                        Delete
+                    </Button>
+                </div>
+            </ModalFooter>
         </ModalRoot>
     );
 }
@@ -352,7 +356,6 @@ function contextMenuPatch(children: any[], ...args: any[]) {
                 id="vc-dmclear-bulk-delete"
                 label="Bulk Delete My Messages"
                 action={(e: any) => {
-                    try { e?.preventDefault?.(); } catch { }
                     try { e?.stopPropagation?.(); } catch { }
                     openDmClearModal(ch);
                 }}
