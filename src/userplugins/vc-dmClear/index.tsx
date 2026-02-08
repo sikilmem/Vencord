@@ -181,7 +181,6 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
         setLogs(prev => [...prev, `[${fmt(new Date())}] ${line}`]);
     }, []);
 
-    // Auto-scroll to bottom on new logs
     React.useEffect(() => {
         const el = logsRef.current;
         if (!el) return;
@@ -271,6 +270,7 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
         }
     }, [countStr, pushLog, channel.id, channel.name, me?.id, me?.username]);
 
+    // Stop propagation only (NO preventDefault) so selection/clicks work normally.
     const stopBubble = (e: any) => {
         try { e?.stopPropagation?.(); } catch { }
     };
@@ -285,7 +285,8 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
 
             <ModalContent>
                 <div onMouseDown={stopBubble} onClick={stopBubble} onPointerDown={stopBubble}>
-                    <Forms.FormSection>
+                    {/* Replaced Forms.FormSection with divs to satisfy tsc */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                         <Forms.FormTitle tag="h3">How many messages will be deleted?</Forms.FormTitle>
                         <TextInput
                             value={countStr}
@@ -293,12 +294,12 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
                             placeholder="e.g. 50"
                             disabled={running}
                         />
-                    </Forms.FormSection>
+                    </div>
 
-                    <Forms.FormSection style={{ marginTop: 12 }}>
+                    <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 8 }}>
                         <Forms.FormTitle tag="h3">Logs</Forms.FormTitle>
 
-                        {/* Plain textarea to avoid Discord "input" styling */}
+                        {/* Plain textarea to avoid Discord input styling */}
                         <textarea
                             ref={logsRef}
                             value={logs.join("\n")}
@@ -313,23 +314,18 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
                                 borderRadius: "8px",
                                 border: "1px solid rgba(255,255,255,0.14)",
                                 background: "rgba(0,0,0,0.55)",
-
-                                // ✅ readability fix
                                 color: "rgba(255,255,255,0.92)",
                                 caretColor: "rgba(255,255,255,0.92)",
-
                                 fontFamily:
                                     "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace",
                                 fontSize: "12px",
                                 lineHeight: "18px",
                                 whiteSpace: "pre",
                                 overflow: "auto",
-
-                                // Optional: makes selection more visible on dark bg
                                 outline: "none"
                             }}
                         />
-                    </Forms.FormSection>
+                    </div>
                 </div>
             </ModalContent>
 
@@ -364,6 +360,7 @@ function DmClearModal(modalProps: any & { channel: TargetChannel; }) {
 }
 
 function openDmClearModal(channel: TargetChannel) {
+    // Defer so the context menu close can't interfere
     setTimeout(() => {
         requestAnimationFrame(() => {
             openModal((props: any) => <DmClearModal {...props} channel={channel} />, undefined);
