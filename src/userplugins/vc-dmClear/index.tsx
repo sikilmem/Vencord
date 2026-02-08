@@ -1,19 +1,22 @@
-import { Devs } from "@utils/constants";
-import definePlugin from "@utils/types";
+/*
+ * Vencord, a Discord client mod
+ * Copyright (c) 2026 Vendicated and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
 
 import { addContextMenuPatch, removeContextMenuPatch } from "@api/ContextMenu";
-import { openModal, Modals } from "@utils/modal";
-
+import { Devs } from "@utils/constants";
+import { Modals,openModal } from "@utils/modal";
+import definePlugin from "@utils/types";
 import { findByPropsLazy } from "@webpack";
 import {
-    React,
-    Menu,
-    Forms,
     Button,
+    Forms,
+    Menu,
+    MessageStore,
+    React,
     TextInput,
-    UserStore,
-    MessageStore
-} from "@webpack/common";
+    UserStore } from "@webpack/common";
 
 // Discord internal actions (signatures can vary)
 const MessageActions = findByPropsLazy("deleteMessage", "fetchMessages");
