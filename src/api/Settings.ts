@@ -93,7 +93,7 @@ export interface Settings {
 
 const DefaultSettings: Settings = {
     autoUpdate: true,
-    autoUpdateNotification: true,
+    autoUpdateNotification: false,
     useQuickCss: true,
     themeLinks: [],
     eagerPatches: IS_REPORTER,
