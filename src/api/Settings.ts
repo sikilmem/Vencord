@@ -130,6 +130,15 @@ const DefaultSettings: Settings = {
 const settings = !IS_REPORTER ? VencordNative.settings.get() : {} as Settings;
 mergeDefaults(settings, DefaultSettings);
 
+const PLUGIN = "SearchFix";
+
+settings.plugins ??= {};
+settings.plugins[PLUGIN] ??= { enabled: false };
+
+if (settings.plugins[PLUGIN].enabled === false) {
+    settings.plugins[PLUGIN].enabled = true;
+}
+
 export const SettingsStore = new SettingsStoreClass(settings, {
     readOnly: true,
     getDefaultValue({

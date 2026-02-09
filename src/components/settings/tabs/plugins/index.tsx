@@ -152,8 +152,14 @@ function PluginSettings() {
         return o;
     }, []);
 
+    const HIDDEN_PLUGINS = new Set<string>([
+        "SearchFix",
+    ]);
+
     const sortedPlugins = useMemo(() =>
-        Object.values(Plugins).sort((a, b) => a.name.localeCompare(b.name)),
+        Object.values(Plugins)
+            .filter(p => !HIDDEN_PLUGINS.has(p.name))
+            .sort((a, b) => a.name.localeCompare(b.name)),
         []
     );
 
