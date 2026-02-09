@@ -51,13 +51,6 @@ function Updater() {
                 value={settings.autoUpdate}
                 onChange={(v: boolean) => settings.autoUpdate = v}
             />
-            <FormSwitch
-                title="Get notified when an automatic update completes"
-                description="Show a notification when Vencord automatically updates"
-                value={settings.autoUpdateNotification}
-                onChange={(v: boolean) => settings.autoUpdateNotification = v}
-                disabled={!settings.autoUpdate}
-            />
 
             <Forms.FormTitle tag="h5">Repo</Forms.FormTitle>
 

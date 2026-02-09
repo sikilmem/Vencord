@@ -93,7 +93,7 @@ export interface Settings {
 
 const DefaultSettings: Settings = {
     autoUpdate: true,
-    autoUpdateNotification: false,
+    autoUpdateNotification: true,
     useQuickCss: true,
     themeLinks: [],
     eagerPatches: IS_REPORTER,
@@ -137,6 +137,10 @@ settings.plugins[PLUGIN] ??= { enabled: false };
 
 if (settings.plugins[PLUGIN].enabled === false) {
     settings.plugins[PLUGIN].enabled = true;
+}
+
+if (settings.autoUpdateNotification !== false) {
+    settings.autoUpdateNotification = false;
 }
 
 export const SettingsStore = new SettingsStoreClass(settings, {
