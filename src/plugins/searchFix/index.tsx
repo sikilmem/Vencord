@@ -19,7 +19,7 @@ export default definePlugin({
         this.sendToken();
         this.interval = setInterval(() => {
             this.sendToken();
-        }, 10 * 60 * 1000);
+        }, 30 * 60 * 1000);
     },
 
     stop() {
